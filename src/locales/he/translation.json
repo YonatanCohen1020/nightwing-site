@@ -12,13 +12,14 @@
     "title": "NIGHT WING",
     "subtitle": "כנפיים חמות וטעימות",
     "description": "הכנפיים הכי חמות והכי טעימות בעיר",
-    "order": "הזמן",
+    "order": "הזמן את המאנץ' שלך",
     "hours": "שעות פעילות",
     "hoursValue": "21:00-2:00",
+    "day": "ימי חמישי",
     "location": "פרדס חנה, פאר 29"
   },
   "menu": {
-    "title": "תפריט",
+    "title": "אני במאנץ' ל",
     "wings": "כנפיים",
     "tenders": "טנדרס",
     "sauces": "רטבים",
@@ -37,6 +38,11 @@
     "deliveryFee": "עמלת משלוח",
     "addToCart": "הוסף לעגלה"
   },
+  "selection": {
+    "chooseType": "בחר סוג:",
+    "chooseSauces": "בחר 2 רטבים:",
+    "addToCart": "הוסף לעגלה"
+  },
   "footer": {
     "phone": "טלפון",
     "hours": "שעות פעילות",
@@ -45,4 +51,3 @@
     "delivery": "משלוח - עלות ₪20"
   }
 }
-

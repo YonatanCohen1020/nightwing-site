@@ -16,10 +16,10 @@ export default {
         'accent-peach': '#e3b5a4',
       },
       fontFamily: {
-        'logo': ['Montserrat', 'sans-serif'],
-        'heading': ['Montserrat', 'sans-serif'],
-        'body': ['Montserrat', 'Inter', 'system-ui', 'sans-serif'],
-        'hebrew': ['Montserrat', 'Assistant', 'Noto Sans Hebrew', 'sans-serif'],
+        'logo': ['Josefin Sans', 'sans-serif'],
+        'heading': ['Josefin Sans', 'sans-serif'],
+        'body': ['Amatic SC', 'cursive', 'system-ui', 'sans-serif'],
+        'hebrew': ['Amatic SC', 'Assistant', 'cursive', 'system-ui', 'sans-serif'],
       },
       animation: {
         'float': 'float 3s ease-in-out infinite',
@@ -28,6 +28,7 @@ export default {
         'twinkle': 'twinkle 2s ease-in-out infinite',
         'glow': 'glow 2s ease-in-out infinite',
         'pulse-glow': 'pulse-glow 2s ease-in-out infinite',
+        'pulse-glow-light': 'pulse-glow-light 3s ease-in-out infinite',
       },
       keyframes: {
         float: {
@@ -50,6 +51,14 @@ export default {
           '50%': { 
             transform: 'scale(1.05)',
             boxShadow: '0 0 20px #f66dce, 0 0 40px #f66dce, 0 0 60px #f66dce'
+          },
+        },
+        'pulse-glow-light': {
+          '0%, 100%': { 
+            boxShadow: '0 0 5px rgba(246, 109, 206, 0.3), 0 0 10px rgba(246, 109, 206, 0.2)'
+          },
+          '50%': { 
+            boxShadow: '0 0 10px rgba(246, 109, 206, 0.4), 0 0 20px rgba(246, 109, 206, 0.3)'
           },
         },
       },

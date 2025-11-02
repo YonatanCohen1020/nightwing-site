@@ -1,15 +1,15 @@
-import { useTranslation } from 'react-i18next';
-import { motion } from 'framer-motion';
-import { FloatingWings } from './FloatingWings';
-import { StarField } from './StarField';
-import { useSmoothScroll } from '../../hooks/useSmoothScroll';
+import { useTranslation } from "react-i18next";
+import { motion } from "framer-motion";
+import { FloatingWings } from "./FloatingWings";
+import { StarField } from "./StarField";
+import { useSmoothScroll } from "../../hooks/useSmoothScroll";
 
 export const HeroSection = () => {
   const { t } = useTranslation();
   const { scrollToSection } = useSmoothScroll();
 
   const handleOrderClick = () => {
-    scrollToSection('menu');
+    scrollToSection("menu");
   };
 
   return (
@@ -19,7 +19,7 @@ export const HeroSection = () => {
       <FloatingWings />
 
       {/* Content */}
-      <div className="relative z-10 container mx-auto px-4 md:px-6 text-center">
+      <div className="relative z-20 container mx-auto px-4 md:px-6 text-center">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -33,44 +33,46 @@ export const HeroSection = () => {
             transition={{ duration: 0.8, delay: 0.2 }}
             className="font-logo mb-4 md:mb-6 leading-tight"
           >
-            <div className="text-7xl md:text-9xl lg:text-[12rem] font-black text-text-primary mb-1 md:mb-2">
+            <div className="text-7xl md:text-9xl lg:text-[12rem] font-logo font-bold text-text-primary mb-1 md:mb-2">
               NIGHT
             </div>
-            <div className="text-7xl md:text-9xl lg:text-[12rem] font-black outlined-text">
+            <div className="text-7xl md:text-9xl lg:text-[12rem] font-logo font-bold outlined-text">
               WING
             </div>
           </motion.h1>
 
-          {/* Subtitle */}
-          <motion.p
+          {/* Subtitle - Disabled */}
+          {/* <motion.p
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.4 }}
-            className="text-xl md:text-2xl lg:text-3xl text-text-primary font-hebrew mb-2 md:mb-3"
+            className="text-3xl md:text-4xl lg:text-5xl text-text-primary font-body font-bold mb-2 md:mb-3"
           >
             {t('hero.subtitle')}
-          </motion.p>
+          </motion.p> */}
 
-          {/* Description */}
-          <motion.p
+          {/* Description - Disabled */}
+          {/* <motion.p
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.6 }}
-            className="text-base md:text-lg text-text-primary/80 mb-6 md:mb-8"
+            className="text-2xl md:text-3xl lg:text-4xl text-text-primary/80 font-body font-bold mb-6 md:mb-8"
           >
             {t('hero.description')}
-          </motion.p>
+          </motion.p> */}
 
           {/* Hours & Location */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.8, delay: 0.8 }}
-            className="flex flex-col md:flex-row items-center justify-center gap-2 md:gap-4 mb-8 md:mb-12 text-accent-peach text-sm md:text-base"
+            className="flex flex-col md:flex-row items-center justify-center gap-2 md:gap-4 mb-8 md:mb-12 text-accent-peach text-2xl md:text-3xl lg:text-4xl font-body font-bold hours-glow"
           >
-            <span>{t('hero.hours')}: {t('hero.hoursValue')}</span>
+            <span>
+              {t("hero.day")} {t("hero.hoursValue")}
+            </span>
             <span className="hidden md:inline">•</span>
-            <span>{t('hero.location')}</span>
+            <span>{t("hero.location")}</span>
           </motion.div>
 
           {/* ORDER Button */}
@@ -78,12 +80,12 @@ export const HeroSection = () => {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8, delay: 1 }}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
             onClick={handleOrderClick}
-            className="btn-primary text-2xl md:text-4xl px-12 md:px-16 py-4 md:py-6 min-h-[64px] md:min-h-[80px] animate-pulse-glow"
+            className="btn-primary text-xl md:text-2xl px-6 md:px-8 py-3 md:py-4 min-h-[48px] md:min-h-[56px] animate-pulse-glow-light"
           >
-            {t('hero.order')}
+            {t("hero.order")}
           </motion.button>
 
           {/* Scroll Indicator */}
@@ -95,7 +97,7 @@ export const HeroSection = () => {
           >
             <motion.div
               animate={{ y: [0, 10, 0] }}
-              transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
               className="inline-block"
             >
               <svg
@@ -118,4 +120,3 @@ export const HeroSection = () => {
     </section>
   );
 };
-

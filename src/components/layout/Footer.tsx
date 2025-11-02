@@ -9,19 +9,19 @@ export const Footer = () => {
         <div className="flex flex-col md:flex-row items-center justify-between gap-4 md:gap-8">
           {/* Contact Info */}
           <div className="text-center md:text-right space-y-2">
-            <p className="text-text-primary font-medium">
+            <p className="text-text-primary font-body font-bold text-xl md:text-2xl">
               <span className="text-accent-pink">{t('footer.phone')}:</span> 058-6230849
             </p>
-            <p className="text-text-primary/70 text-sm">
+            <p className="text-text-primary/70 text-lg md:text-xl font-body font-bold">
               <span className="text-accent-pink">{t('footer.hours')}:</span> {t('hero.hoursValue')}
             </p>
-            <p className="text-text-primary/70 text-sm">
+            <p className="text-text-primary/70 text-lg md:text-xl font-body font-bold">
               <span className="text-accent-pink">{t('footer.location')}:</span> {t('hero.location')}
             </p>
           </div>
 
           {/* Disclaimer */}
-          <div className="text-center md:text-left text-text-primary/60 text-xs md:text-sm max-w-md">
+          <div className="text-center md:text-left text-text-primary/60 text-base md:text-lg font-body font-bold max-w-md">
             <p>{t('footer.pickup')}</p>
             <p>{t('footer.delivery')}</p>
           </div>

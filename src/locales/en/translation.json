@@ -12,13 +12,14 @@
     "title": "NIGHT WING",
     "subtitle": "Hot & Tasty Wings",
     "description": "The hottest and most delicious wings in town",
-    "order": "ORDER",
+    "order": "Order your munch",
     "hours": "Hours",
     "hoursValue": "21:00-2:00",
+    "day": "Thursdays",
     "location": "Pardes Hanna, Paar 29"
   },
   "menu": {
-    "title": "Menu",
+    "title": "I'm in the munch for",
     "wings": "Wings",
     "tenders": "Tenders",
     "sauces": "Sauces",
@@ -37,6 +38,11 @@
     "deliveryFee": "Delivery Fee",
     "addToCart": "Add to Cart"
   },
+  "selection": {
+    "chooseType": "Choose type:",
+    "chooseSauces": "Choose 2 sauces:",
+    "addToCart": "Add to Cart"
+  },
   "footer": {
     "phone": "Phone",
     "hours": "Hours",
@@ -45,4 +51,3 @@
     "delivery": "Delivery - Cost ₪20"
   }
 }
-

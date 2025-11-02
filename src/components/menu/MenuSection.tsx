@@ -5,22 +5,22 @@ import { MenuItemCard } from './MenuItemCard';
 export const MenuSection = () => {
   const { t } = useTranslation();
 
-  // Group items by category
+  // Group items by category - combo first
   const categories = [
+    { key: 'combo' as const, items: menuItems.filter(item => item.category === 'combo') },
     { key: 'wings' as const, items: menuItems.filter(item => item.category === 'wings') },
     { key: 'tenders' as const, items: menuItems.filter(item => item.category === 'tenders') },
     { key: 'sauces' as const, items: menuItems.filter(item => item.category === 'sauces') },
     { key: 'salads' as const, items: menuItems.filter(item => item.category === 'salads') },
     { key: 'drinks' as const, items: menuItems.filter(item => item.category === 'drinks') },
     { key: 'addons' as const, items: menuItems.filter(item => item.category === 'addons') },
-    { key: 'combo' as const, items: menuItems.filter(item => item.category === 'combo') },
   ];
 
   return (
     <section id="menu" className="py-16 md:py-24 bg-bg-primary scroll-mt-[70px]">
       <div className="container mx-auto px-4 md:px-6">
         {/* Section Title */}
-        <h2 className="section-title text-center mb-12 md:mb-16">
+        <h2 className="text-accent-pink font-body font-bold text-4xl md:text-5xl mb-12 md:mb-16 pb-2 border-b-2 border-accent-pink inline-block text-center w-full">
           {t('menu.title')}
         </h2>
 
@@ -32,7 +32,7 @@ export const MenuSection = () => {
             return (
               <div key={category.key} className="space-y-6">
                 {/* Category Title */}
-                <h3 className="text-3xl md:text-4xl font-heading font-bold text-accent-pink mb-6 pb-2 border-b border-accent-pink/30">
+                <h3 className="text-3xl md:text-4xl font-body font-bold text-accent-pink mb-6 pb-2 border-b border-accent-pink/30">
                   {t(`menu.${category.key}`)}
                 </h3>
 

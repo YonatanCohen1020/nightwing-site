@@ -15,7 +15,7 @@ const stars = generateStars(30);
 
 export const StarField = () => {
   return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+    <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
       {stars.map((star) => (
         <motion.div
           key={star.id}

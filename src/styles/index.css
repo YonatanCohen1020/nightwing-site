@@ -1,27 +1,41 @@
-/* Montserrat Font - Self Hosted */
+/* Josefin Sans Font - For Titles/Logo */
 @font-face {
-  font-family: 'Montserrat';
-  src: url('/fonts/Montserrat-Regular.woff2') format('woff2'),
-       url('/fonts/Montserrat-Regular.woff') format('woff');
+  font-family: 'Josefin Sans';
+  src: url('/fonts/Josefin_Sans/JosefinSans-Regular.ttf') format('truetype');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
-  font-family: 'Montserrat';
-  src: url('/fonts/Montserrat-Bold.woff2') format('woff2'),
-       url('/fonts/Montserrat-Bold.woff') format('woff');
-  font-weight: 700;
+  font-family: 'Josefin Sans';
+  src: url('/fonts/Josefin_Sans/JosefinSans-SemiBold.ttf') format('truetype');
+  font-weight: 600;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
-  font-family: 'Montserrat';
-  src: url('/fonts/Montserrat-Black.woff2') format('woff2'),
-       url('/fonts/Montserrat-Black.woff') format('woff');
-  font-weight: 900;
+  font-family: 'Josefin Sans';
+  src: url('/fonts/Josefin_Sans/JosefinSans-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Amatic SC Font - For Body Text */
+@font-face {
+  font-family: 'Amatic SC';
+  src: url('/fonts/Amatic_SC/AmaticSC-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Amatic SC';
+  src: url('/fonts/Amatic_SC/AmaticSC-Bold.ttf') format('truetype');
+  font-weight: 700;
   font-style: normal;
   font-display: swap;
 }
@@ -45,12 +59,76 @@
   }
 
   body {
-    @apply bg-bg-primary text-text-primary font-body;
+    @apply bg-bg-primary text-text-primary font-body font-bold;
     direction: rtl;
     font-feature-settings: "kern" 1;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    font-size: 1.5rem; /* Base size: 24px instead of 16px - much bigger */
+    line-height: 1.6;
+  }
+
+  /* Make all body text (Amatic SC) much bigger and bolder */
+  /* Exclude elements with font-logo or font-heading classes */
+  p:not(.font-logo):not(.font-heading), 
+  span:not(.font-logo):not(.font-heading), 
+  div:not(.font-logo):not(.font-heading):not(.font-body):not([class*="font-"]), 
+  li, td, th {
+    font-family: 'Amatic SC', cursive, system-ui, sans-serif;
+    font-weight: 700; /* Bold */
+    font-size: 1.5rem; /* 24px base */
+  }
+  
+  /* Paragraphs even bigger - but not if they have font-logo/heading */
+  p:not(.font-logo):not(.font-heading) {
+    font-size: 1.75rem; /* 28px */
+  }
+  
+  /* Explicitly ensure font-logo and font-heading elements use their fonts */
+  .font-logo,
+  .font-heading {
+    font-family: 'Josefin Sans', sans-serif !important;
+  }
+  
+  .font-body,
+  .font-hebrew {
+    font-family: 'Amatic SC', cursive, system-ui, sans-serif !important;
+  }
+  
+  /* Small text still readable but bigger */
+  .text-sm {
+    font-size: 1.25rem !important; /* 20px */
+  }
+  
+  /* Extra small text */
+  .text-xs {
+    font-size: 1rem !important; /* 16px */
+  }
+  
+  /* Large text */
+  .text-lg {
+    font-size: 2rem !important; /* 32px */
+  }
+  
+  /* Extra large text */
+  .text-xl {
+    font-size: 2.25rem !important; /* 36px */
+  }
+  
+  /* 2XL text */
+  .text-2xl {
+    font-size: 2.75rem !important; /* 44px */
+  }
+  
+  /* 3XL text */
+  .text-3xl {
+    font-size: 3.5rem !important; /* 56px */
+  }
+  
+  /* 4XL text */
+  .text-4xl {
+    font-size: 4.5rem !important; /* 72px */
   }
 
   /* RTL/LTR Support */
@@ -89,15 +167,24 @@
 
 @layer components {
   .btn-primary {
-    @apply bg-accent-pink text-white font-bold px-8 py-4 rounded-xl 
-           transition-all duration-300 transform hover:scale-105 
-           active:scale-95 shadow-lg hover:shadow-accent-pink/50
+    @apply bg-accent-pink/20 text-text-primary font-body font-bold px-8 py-4 rounded-xl 
+           border-2 border-accent-pink transition-all duration-300 transform hover:scale-[1.02] 
+           active:scale-[0.98] shadow-md hover:shadow-md hover:bg-accent-pink/25
            disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none;
   }
 
   .section-title {
     @apply text-accent-pink font-heading font-bold text-4xl md:text-5xl 
            mb-4 pb-2 border-b-2 border-accent-pink inline-block;
+  }
+
+  /* Hours & Location Glow Effect */
+  .hours-glow {
+    font-weight: 700;
+    text-shadow: 
+      0 0 5px rgba(246, 109, 206, 0.3),
+      0 0 10px rgba(246, 109, 206, 0.2),
+      0 0 15px rgba(246, 109, 206, 0.1);
   }
 
   /* Outlined Text Effect - Clean, No Shadows */

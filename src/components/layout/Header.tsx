@@ -63,9 +63,9 @@ export const Header = () => {
             {/* Language Switcher */}
             <button
               onClick={toggleLanguage}
-              className="px-3 py-1.5 rounded-lg bg-bg-light hover:bg-accent-pink/20 transition-colors text-sm font-medium"
+              className="px-4 py-2 rounded-lg bg-accent-pink/20 hover:bg-accent-pink/30 border border-accent-pink/40 transition-colors text-base md:text-lg font-body font-bold text-text-primary"
             >
-              {i18n.language === 'he' ? 'EN' : 'עברית'}
+              {i18n.language === 'he' ? 'English' : 'עברית'}
             </button>
 
             {/* Cart Icon */}

@@ -20,6 +20,7 @@ export const menuItems: MenuItem[] = [
     descriptionEn: '9 pieces, 2 sauces',
     price: 45,
     category: 'wings',
+    imageUrl: '/assets/wings.webp',
     isAvailable: true,
   },
   {
@@ -30,6 +31,7 @@ export const menuItems: MenuItem[] = [
     descriptionEn: '6 chicken fillet pieces, 2 sauces',
     price: 45,
     category: 'tenders',
+    imageUrl: '/assets/tenders.jpg',
     isAvailable: true,
   },
   {
@@ -81,6 +83,7 @@ export const menuItems: MenuItem[] = [
     descriptionEn: 'Traditional American coleslaw',
     price: 5,
     category: 'salads',
+    imageUrl: '/assets/coleslaw.jpg',
     isAvailable: true,
   },
   {
@@ -111,6 +114,7 @@ export const menuItems: MenuItem[] = [
     descriptionEn: 'Crispy and delicious fries',
     price: 15,
     category: 'addons',
+    imageUrl: '/assets/fries.webp',
     isAvailable: true,
   },
   {
@@ -121,6 +125,7 @@ export const menuItems: MenuItem[] = [
     descriptionEn: 'Tenders/Wings + Fries + Can Drink + Salad',
     price: 65,
     category: 'combo',
+    imageUrl: '/assets/combo.webp',
     isAvailable: true,
   },
 ];
