@@ -1,3 +1,31 @@
+/* Montserrat Font - Self Hosted */
+@font-face {
+  font-family: 'Montserrat';
+  src: url('/fonts/Montserrat-Regular.woff2') format('woff2'),
+       url('/fonts/Montserrat-Regular.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Montserrat';
+  src: url('/fonts/Montserrat-Bold.woff2') format('woff2'),
+       url('/fonts/Montserrat-Bold.woff') format('woff');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Montserrat';
+  src: url('/fonts/Montserrat-Black.woff2') format('woff2'),
+       url('/fonts/Montserrat-Black.woff') format('woff');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -70,6 +98,21 @@
   .section-title {
     @apply text-accent-pink font-heading font-bold text-4xl md:text-5xl 
            mb-4 pb-2 border-b-2 border-accent-pink inline-block;
+  }
+
+  /* Outlined Text Effect - Clean, No Shadows */
+  .outlined-text {
+    color: transparent;
+    -webkit-text-stroke: 3px #f66dce;
+    text-stroke: 3px #f66dce;
+  }
+
+  /* Mobile adjustments */
+  @media (max-width: 768px) {
+    .outlined-text {
+      -webkit-text-stroke: 2px #f66dce;
+      text-stroke: 2px #f66dce;
+    }
   }
 }
 

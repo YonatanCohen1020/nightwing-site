@@ -16,10 +16,10 @@ export default {
         'accent-peach': '#e3b5a4',
       },
       fontFamily: {
-        'logo': ['Bebas Neue', 'Montserrat', 'sans-serif'],
+        'logo': ['Montserrat', 'sans-serif'],
         'heading': ['Montserrat', 'sans-serif'],
-        'body': ['Inter', 'system-ui', 'sans-serif'],
-        'hebrew': ['Assistant', 'Noto Sans Hebrew', 'sans-serif'],
+        'body': ['Montserrat', 'Inter', 'system-ui', 'sans-serif'],
+        'hebrew': ['Montserrat', 'Assistant', 'Noto Sans Hebrew', 'sans-serif'],
       },
       animation: {
         'float': 'float 3s ease-in-out infinite',
