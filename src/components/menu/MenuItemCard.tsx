@@ -61,7 +61,7 @@ export const MenuItemCard = ({ item }: MenuItemCardProps) => {
       {/* Content */}
       <div className="p-4 md:p-6">
         {/* Description */}
-        <p className="text-text-primary/70 text-xl md:text-2xl font-body font-bold mb-4">
+        <p className="text-text-primary/70 text-lg md:text-xl font-body font-bold mb-4">
           {isRTL ? item.descriptionHe : item.descriptionEn}
         </p>
 

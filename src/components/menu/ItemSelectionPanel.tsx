@@ -13,19 +13,25 @@ interface ItemSelectionPanelProps {
   onClose: () => void;
   editingCartItemId?: string; // If provided, we're editing an existing cart item
   initialConfig?: {
-    comboType: 'wings' | 'tenders';
+    comboType: "wings" | "tenders";
     selectedSauces: string[];
     selectedDrink: string;
   };
 }
 
-export const ItemSelectionPanel = ({ item, isOpen, onClose, editingCartItemId, initialConfig }: ItemSelectionPanelProps) => {
+export const ItemSelectionPanel = ({
+  item,
+  isOpen,
+  onClose,
+  editingCartItemId,
+  initialConfig,
+}: ItemSelectionPanelProps) => {
   const { t, i18n } = useTranslation();
   const addItem = useCartStore((state) => state.addItem);
   const updateItem = useCartStore((state) => state.updateItem);
   const isRTL = i18n.language === "he";
   const [mounted, setMounted] = useState(false);
-  
+
   const sauces = menuItems.filter((i) => i.category === "sauces");
   const drinks = menuItems.filter((i) => i.category === "drinks");
   const wingsItem = menuItems.find((i) => i.category === "wings");
@@ -37,12 +43,12 @@ export const ItemSelectionPanel = ({ item, isOpen, onClose, editingCartItemId, i
   const [comboType, setComboType] = useState<"wings" | "tenders">(
     initialConfig?.comboType || "wings"
   );
-  
+
   // State for sauce selection (max 2)
   const [selectedSauces, setSelectedSauces] = useState<string[]>(
     initialConfig?.selectedSauces || []
   );
-  
+
   // State for drink selection (combo only, 1 drink)
   const [selectedDrink, setSelectedDrink] = useState<string | null>(
     initialConfig?.selectedDrink || null
@@ -85,7 +91,7 @@ export const ItemSelectionPanel = ({ item, isOpen, onClose, editingCartItemId, i
     if (item.category === "combo") {
       // Combo needs: wings/tenders choice + 2 sauces + 1 drink
       if (selectedSauces.length !== 2 || !selectedDrink) return;
-      
+
       const baseItem = comboType === "wings" ? wingsItem! : tendersItem!;
       const selectedSauceItems = selectedSauces.map((id) =>
         sauces.find((s) => s.id === id)
@@ -93,13 +99,21 @@ export const ItemSelectionPanel = ({ item, isOpen, onClose, editingCartItemId, i
       const selectedDrinkItem = drinks.find((d) => d.id === selectedDrink);
 
       // Create a unique ID for this combo configuration
-      const comboId = `combo-${comboType}-${selectedSauces.sort().join("-")}-${selectedDrink}`;
-      
+      const comboId = `combo-${comboType}-${selectedSauces
+        .sort()
+        .join("-")}-${selectedDrink}`;
+
       // Build combo name with all included items
-      const sauceNames = selectedSauceItems.map((s) => isRTL ? s?.nameHe : s?.nameEn).filter(Boolean);
+      const sauceNames = selectedSauceItems
+        .map((s) => (isRTL ? s?.nameHe : s?.nameEn))
+        .filter(Boolean);
       const comboName = isRTL
-        ? `${item.nameHe} - ${baseItem.nameHe}, ${sauceNames.join(", ")}, ${selectedDrinkItem?.nameHe || ""}, ${friesItem?.nameHe || ""}, ${saladItem?.nameHe || ""}`
-        : `${item.nameEn} - ${baseItem.nameEn}, ${sauceNames.join(", ")}, ${selectedDrinkItem?.nameEn || ""}, ${friesItem?.nameEn || ""}, ${saladItem?.nameEn || ""}`;
+        ? `${item.nameHe} - ${baseItem.nameHe}, ${sauceNames.join(", ")}, ${
+            selectedDrinkItem?.nameHe || ""
+          }, ${friesItem?.nameHe || ""}, ${saladItem?.nameHe || ""}`
+        : `${item.nameEn} - ${baseItem.nameEn}, ${sauceNames.join(", ")}, ${
+            selectedDrinkItem?.nameEn || ""
+          }, ${friesItem?.nameEn || ""}, ${saladItem?.nameEn || ""}`;
 
       if (editingCartItemId) {
         // Update existing cart item
@@ -108,7 +122,7 @@ export const ItemSelectionPanel = ({ item, isOpen, onClose, editingCartItemId, i
             id: comboId,
             name: comboName,
             price: item.price,
-            imageUrl: baseItem.imageUrl,
+            imageUrl: item.imageUrl,
             isCombo: true,
             comboConfig: {
               comboType,
@@ -124,7 +138,7 @@ export const ItemSelectionPanel = ({ item, isOpen, onClose, editingCartItemId, i
           id: comboId,
           name: comboName,
           price: item.price,
-          imageUrl: baseItem.imageUrl,
+          imageUrl: item.imageUrl,
           isCombo: true,
           comboConfig: {
             comboType,
@@ -144,8 +158,12 @@ export const ItemSelectionPanel = ({ item, isOpen, onClose, editingCartItemId, i
 
       const customizedId = `${item.id}-${selectedSauces.sort().join("-")}`;
       const customizedName = isRTL
-        ? `${item.nameHe} - ${selectedSauceItems.map((s) => s?.nameHe).join(", ")}`
-        : `${item.nameEn} - ${selectedSauceItems.map((s) => s?.nameEn).join(", ")}`;
+        ? `${item.nameHe} - ${selectedSauceItems
+            .map((s) => s?.nameHe)
+            .join(", ")}`
+        : `${item.nameEn} - ${selectedSauceItems
+            .map((s) => s?.nameEn)
+            .join(", ")}`;
 
       if (editingCartItemId) {
         // Update existing cart item
@@ -156,9 +174,9 @@ export const ItemSelectionPanel = ({ item, isOpen, onClose, editingCartItemId, i
             price: item.price,
             imageUrl: item.imageUrl,
             comboConfig: {
-              comboType: item.category === 'wings' ? 'wings' : 'tenders',
+              comboType: item.category === "wings" ? "wings" : "tenders",
               selectedSauces,
-              selectedDrink: '', // Not applicable for wings/tenders
+              selectedDrink: "", // Not applicable for wings/tenders
               baseItemId: item.id,
             },
           });
@@ -171,9 +189,9 @@ export const ItemSelectionPanel = ({ item, isOpen, onClose, editingCartItemId, i
           price: item.price,
           imageUrl: item.imageUrl,
           comboConfig: {
-            comboType: item.category === 'wings' ? 'wings' : 'tenders',
+            comboType: item.category === "wings" ? "wings" : "tenders",
             selectedSauces,
-            selectedDrink: '', // Not applicable for wings/tenders
+            selectedDrink: "", // Not applicable for wings/tenders
             baseItemId: item.id,
           },
         });
@@ -360,4 +378,3 @@ export const ItemSelectionPanel = ({ item, isOpen, onClose, editingCartItemId, i
 
   return createPortal(panelContent, document.body);
 };
-

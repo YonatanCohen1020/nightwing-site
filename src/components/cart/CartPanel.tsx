@@ -105,7 +105,7 @@ export const CartPanel = ({ isOpen, onClose }: CartPanelProps) => {
                     {items.map((item) => (
                       <div
                         key={item.id}
-                        className="bg-bg-light rounded-xl p-4 border border-accent-pink/20"
+                        className="bg-bg-light rounded-xl p-4 border border-accent-pink/20 text-center"
                       >
                         {/* Item Image */}
                         {item.imageUrl && (
@@ -120,7 +120,7 @@ export const CartPanel = ({ isOpen, onClose }: CartPanelProps) => {
 
                         {/* Item Info */}
                         <div className="mb-3">
-                          <h3 className="text-lg md:text-xl font-body font-bold text-text-primary mb-1">
+                          <h3 className="text-lg md:text-lg font-body font-bold text-text-primary mb-1">
                             {item.name}
                           </h3>
                         </div>
@@ -198,13 +198,13 @@ export const CartPanel = ({ isOpen, onClose }: CartPanelProps) => {
                   <div className="flex gap-2">
                     <button
                       onClick={clearCart}
-                      className="flex-1 px-4 py-3 rounded-lg bg-red-500/20 text-red-400 hover:bg-red-500/30 transition-colors font-body font-bold text-base md:text-lg"
+                      className="flex-1 px-4 py-3 rounded-lg bg-red-500/20 text-red-400 hover:bg-red-500/30 transition-colors font-body font-bold text-lg md:text-lg"
                     >
                       {t('cart.clear')}
                     </button>
                     <button
                       onClick={onClose}
-                      className="flex-1 px-4 py-3 rounded-lg bg-accent-pink text-white hover:bg-accent-pink/90 transition-colors font-body font-bold text-base md:text-lg"
+                      className="flex-1 px-4 py-3 rounded-lg bg-accent-pink text-white hover:bg-accent-pink/90 transition-colors font-body font-bold text-lg md:text-lg"
                     >
                       {t('cart.keepOrdering')}
                     </button>
