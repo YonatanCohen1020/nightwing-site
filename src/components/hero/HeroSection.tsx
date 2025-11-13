@@ -66,7 +66,7 @@ export const HeroSection = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.8, delay: 0.8 }}
-            className="flex flex-col md:flex-row items-center justify-center gap-2 md:gap-4 mb-8 md:mb-12 text-accent-peach text-2xl md:text-3xl lg:text-4xl font-body font-bold hours-glow"
+            className="flex flex-col md:flex-row items-center justify-center gap-2 md:gap-4 mb-8 md:mb-12 text-accent-peach text-3xl md:text-4xl lg:text-5xl font-body font-bold hours-glow"
           >
             <span>
               {t("hero.day")} {t("hero.hoursValue")}
