@@ -9,7 +9,7 @@ export const Footer = () => {
         <div className="flex flex-col md:flex-row items-center justify-between gap-4 md:gap-8">
           {/* Contact Info */}
           <div className="text-center md:text-right space-y-2">
-            <p className="text-text-primary font-body font-bold text-xl md:text-2xl">
+            <p className="text-text-primary/70 text-lg md:text-xl font-body font-bold">
               <span className="text-accent-pink">{t('footer.phone')}:</span> 058-6230849
             </p>
             <p className="text-text-primary/70 text-lg md:text-xl font-body font-bold">
