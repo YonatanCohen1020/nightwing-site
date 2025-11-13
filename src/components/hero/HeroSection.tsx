@@ -36,7 +36,7 @@ export const HeroSection = () => {
             <div className="text-7xl md:text-9xl lg:text-[12rem] font-logo font-bold text-text-primary mb-1 md:mb-2">
               NIGHT
             </div>
-            <div className="text-7xl md:text-9xl lg:text-[12rem] font-logo font-bold outlined-text">
+            <div className="text-7xl md:text-9xl lg:text-[12rem] font-logo font-bold outlined-text wing-flicker">
               WING
             </div>
           </motion.h1>

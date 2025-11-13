@@ -17,6 +17,23 @@ function App() {
     document.documentElement.dir = currentLang === 'he' ? 'rtl' : 'ltr';
   }, [i18n.language]);
 
+  useEffect(() => {
+    // Preserve scroll position on mount
+    const scrollY = sessionStorage.getItem('scrollPosition');
+    if (scrollY) {
+      window.scrollTo(0, parseInt(scrollY, 10));
+      sessionStorage.removeItem('scrollPosition');
+    }
+
+    // Save scroll position before unload
+    const handleBeforeUnload = () => {
+      sessionStorage.setItem('scrollPosition', window.scrollY.toString());
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, []);
+
   const toggleLanguage = () => {
     const newLang = i18n.language === 'he' ? 'en' : 'he';
     i18n.changeLanguage(newLang);

@@ -57,6 +57,13 @@
     scroll-behavior: smooth;
     scroll-padding-top: 70px;
   }
+  
+  /* Preserve scroll position on refresh */
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      scroll-behavior: smooth;
+    }
+  }
 
   body {
     @apply bg-bg-primary text-text-primary font-body font-bold;
@@ -216,6 +223,87 @@
       -webkit-text-stroke: 8px #f66dce;
       text-stroke: 8px #f66dce;
     }
+  }
+
+  /* Night Light Flickering Animation for WING - Color transition with subtle glow */
+  @keyframes nightLightFlicker {
+    0% {
+      -webkit-text-stroke-color: #0a0508;
+      text-stroke-color: #0a0508;
+      opacity: 0.3;
+      filter: drop-shadow(0 0 2px rgba(10, 5, 8, 0.3));
+    }
+    8% {
+      -webkit-text-stroke-color: #2d0f24;
+      text-stroke-color: #2d0f24;
+      opacity: 0.5;
+      filter: drop-shadow(0 0 4px rgba(45, 15, 36, 0.4));
+    }
+    12% {
+      -webkit-text-stroke-color: #0a0508;
+      text-stroke-color: #0a0508;
+      opacity: 0.3;
+      filter: drop-shadow(0 0 2px rgba(10, 5, 8, 0.3));
+    }
+    20% {
+      -webkit-text-stroke-color: #5a1640;
+      text-stroke-color: #5a1640;
+      opacity: 0.7;
+      filter: drop-shadow(0 0 6px rgba(90, 22, 64, 0.5));
+    }
+    25% {
+      -webkit-text-stroke-color: #2d0f24;
+      text-stroke-color: #2d0f24;
+      opacity: 0.5;
+      filter: drop-shadow(0 0 4px rgba(45, 15, 36, 0.4));
+    }
+    32% {
+      -webkit-text-stroke-color: #b34490;
+      text-stroke-color: #b34490;
+      opacity: 0.85;
+      filter: drop-shadow(0 0 8px rgba(179, 68, 144, 0.6));
+    }
+    38% {
+      -webkit-text-stroke-color: #802060;
+      text-stroke-color: #802060;
+      opacity: 0.75;
+      filter: drop-shadow(0 0 6px rgba(128, 32, 96, 0.5));
+    }
+    45% {
+      -webkit-text-stroke-color: #f66dce;
+      text-stroke-color: #f66dce;
+      opacity: 1;
+      filter: drop-shadow(0 0 10px rgba(246, 109, 206, 0.7));
+    }
+    50% {
+      -webkit-text-stroke-color: #b34490;
+      text-stroke-color: #b34490;
+      opacity: 0.9;
+      filter: drop-shadow(0 0 8px rgba(179, 68, 144, 0.6));
+    }
+    58% {
+      -webkit-text-stroke-color: #f66dce;
+      text-stroke-color: #f66dce;
+      opacity: 1;
+      filter: drop-shadow(0 0 10px rgba(246, 109, 206, 0.7));
+    }
+    65% {
+      -webkit-text-stroke-color: #e056ba;
+      text-stroke-color: #e056ba;
+      opacity: 0.95;
+      filter: drop-shadow(0 0 9px rgba(224, 86, 186, 0.65));
+    }
+    75%, 100% {
+      -webkit-text-stroke-color: #f66dce;
+      text-stroke-color: #f66dce;
+      opacity: 1;
+      filter: drop-shadow(0 0 10px rgba(246, 109, 206, 0.7));
+    }
+  }
+
+  /* Apply the animation to WING text */
+  .wing-flicker {
+    animation: nightLightFlicker 2.5s ease-in-out forwards;
   }
 }
 
