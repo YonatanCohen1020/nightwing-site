@@ -2,15 +2,7 @@ import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation } from "react-i18next";
-import {
-  X,
-  Trash2,
-  Edit2,
-  Minus,
-  Plus,
-  MapPin,
-  Navigation,
-} from "lucide-react";
+import { X, Trash2, Edit2, Minus, Plus, Navigation } from "lucide-react";
 import { useCartStore, CartItem } from "../../stores/useCartStore";
 import { ItemSelectionPanel } from "../menu/ItemSelectionPanel";
 import { menuItems } from "../../types/menu";
@@ -96,7 +88,7 @@ export const CartPanel = ({ isOpen, onClose }: CartPanelProps) => {
         setDeliveryAddress(`${lat}, ${lng}`);
         setUseCurrentLocation(false);
       },
-      (error) => {
+      (_error) => {
         setLocationError("Unable to retrieve your location");
         setUseCurrentLocation(false);
       }
@@ -404,11 +396,11 @@ export const CartPanel = ({ isOpen, onClose }: CartPanelProps) => {
                         >
                           {/* Item Image */}
                           {item.imageUrl && (
-                            <div className="w-full h-32 mb-3 bg-bg-dark rounded-lg overflow-hidden">
+                            <div className="w-full h-32 mb-3 bg-bg-dark rounded-lg overflow-hidden flex items-center justify-center p-2">
                               <img
                                 src={item.imageUrl}
                                 alt={item.name}
-                                className="w-full h-full object-cover"
+                                className="max-w-full max-h-full object-contain"
                               />
                             </div>
                           )}
