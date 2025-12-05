@@ -39,7 +39,7 @@
 - All menu items from the menu description:
   - Wings (9 pieces, 2 sauces, 45₪)
   - Tenders (6 pieces, 2 sauces, 45₪)
-  - Sauces (Classic Chili, Thai, Peanut Butter, Mustard & Honey)
+  - Sauces (Classic Chili, Spicy Honey, Peanut Butter, Mustard & Honey)
   - Salads (Classic American Coleslaw, 5₪)
   - Drinks (1.5L, 15₪ | Can, 10₪)
   - Add-ons (Fries, 15₪)

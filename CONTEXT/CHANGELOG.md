@@ -171,7 +171,7 @@ All items from the menu description implemented:
 
 #### Sauces
 - Classic Chili (0₪)
-- Thai - Spicy (0₪, spice level: 4)
+- Spicy Honey (2₪, spice level: 4)
 - Peanut Butter (0₪)
 - Mustard and Honey (0₪)
 
