@@ -180,7 +180,7 @@ export const ItemSelectionPanel = ({
           },
         });
       }
-      
+
       // Trigger animation first, then close panel
       if (onAddSuccess) {
         onAddSuccess();
@@ -235,7 +235,7 @@ export const ItemSelectionPanel = ({
           },
         });
       }
-      
+
       // Trigger animation first, then close panel
       if (onAddSuccess) {
         onAddSuccess();
