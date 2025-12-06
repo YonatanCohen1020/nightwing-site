@@ -13,6 +13,8 @@ const WEBHOOK_URL = USE_TEST_WEBHOOK
   ? "https://n8n.yarden-zamir.com/webhook-test/order"
   : "https://n8n.yarden-zamir.com/webhook/order";
 
+const DELIVERY_FEE = 20;
+
 interface CartPanelProps {
   isOpen: boolean;
   onClose: () => void;
@@ -41,6 +43,10 @@ export const CartPanel = ({ isOpen, onClose }: CartPanelProps) => {
   const [deliveryAddress, setDeliveryAddress] = useState("");
   const [useCurrentLocation, setUseCurrentLocation] = useState(false);
   const [locationError, setLocationError] = useState("");
+
+  const cartTotal = getTotal();
+  const finalTotal =
+    orderType === "delivery" ? cartTotal + DELIVERY_FEE : cartTotal;
 
   useEffect(() => {
     setMounted(true);
@@ -128,7 +134,7 @@ export const CartPanel = ({ isOpen, onClose }: CartPanelProps) => {
         orderType: orderType,
         deliveryAddress:
           orderType === "delivery" ? deliveryAddress.trim() : null,
-        total: getTotal(),
+        total: finalTotal,
       };
 
       const response = await fetch(WEBHOOK_URL, {
@@ -217,7 +223,7 @@ export const CartPanel = ({ isOpen, onClose }: CartPanelProps) => {
                   {/* Order Items Summary */}
                   <div className="bg-bg-light rounded-xl p-4 border border-accent-pink/20">
                     <h3 className="text-lg font-body font-bold text-text-primary mb-3">
-                      {t("cart.total")}: ₪{getTotal()}
+                      {t("cart.total")}: ₪{finalTotal}
                     </h3>
                     <div className="space-y-2">
                       {items.map((item) => (
@@ -233,6 +239,16 @@ export const CartPanel = ({ isOpen, onClose }: CartPanelProps) => {
                           </span>
                         </div>
                       ))}
+                      {orderType === "delivery" && (
+                        <div className="flex justify-between text-sm border-t border-accent-pink/10 pt-2 mt-2">
+                          <span className="text-text-primary/80">
+                            {t("cart.deliveryFee")}
+                          </span>
+                          <span className="text-accent-pink">
+                            ₪{DELIVERY_FEE}
+                          </span>
+                        </div>
+                      )}
                     </div>
                   </div>
 

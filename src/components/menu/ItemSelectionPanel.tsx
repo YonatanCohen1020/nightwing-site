@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation } from "react-i18next";
-import { X, Check } from "lucide-react";
+import { X, Check, Minus, Plus } from "lucide-react";
 import { MenuItem } from "../../types/menu";
 import { menuItems } from "../../types/menu";
 import { useCartStore } from "../../stores/useCartStore";
@@ -104,12 +104,22 @@ export const ItemSelectionPanel = ({
     };
   }, [isOpen]);
 
-  const toggleSauce = (sauceId: string) => {
+  const addSauce = (sauceId: string) => {
     setSelectedSauces((prev) => {
-      if (prev.includes(sauceId)) {
-        return prev.filter((id) => id !== sauceId);
-      } else if (prev.length < 2) {
+      if (prev.length < 2) {
         return [...prev, sauceId];
+      }
+      return prev;
+    });
+  };
+
+  const removeSauce = (sauceId: string) => {
+    setSelectedSauces((prev) => {
+      const index = prev.indexOf(sauceId);
+      if (index > -1) {
+        const newSauces = [...prev];
+        newSauces.splice(index, 1);
+        return newSauces;
       }
       return prev;
     });
@@ -256,6 +266,15 @@ export const ItemSelectionPanel = ({
       ? selectedSauces.length === 2 && selectedDrink !== null
       : selectedSauces.length === 2;
 
+  // Calculate selected sauce names for display
+  const selectedSauceNames = selectedSauces
+    .map((id) => {
+      const s = sauces.find((sauce) => sauce.id === id);
+      return isRTL ? s?.nameHe : s?.nameEn;
+    })
+    .filter(Boolean)
+    .join(", ");
+
   if (!mounted) return null;
 
   const panelContent = (
@@ -306,25 +325,43 @@ export const ItemSelectionPanel = ({
                     {wingsItem && (
                       <button
                         onClick={() => setComboType("wings")}
-                        className={`flex-1 p-3 md:p-4 rounded-xl border-2 transition-all font-body font-bold text-lg md:text-xl min-h-[48px] flex items-center justify-center ${
+                        className={`flex-1 p-3 md:p-4 rounded-xl border-2 transition-all font-body font-bold text-sm md:text-lg min-h-[48px] flex items-center justify-center gap-3 ${
                           comboType === "wings"
                             ? "border-accent-pink bg-accent-pink/20 text-accent-pink"
                             : "border-accent-pink/30 bg-bg-light text-text-primary"
                         }`}
                       >
-                        {isRTL ? wingsItem.nameHe : wingsItem.nameEn}
+                        {wingsItem.imageUrl && (
+                          <img
+                            src={wingsItem.imageUrl}
+                            alt=""
+                            className="w-10 h-10 md:w-12 md:h-12 object-contain"
+                          />
+                        )}
+                        <span className="font-body font-bold text-sm md:text-lg">
+                          {isRTL ? wingsItem.nameHe : wingsItem.nameEn}
+                        </span>
                       </button>
                     )}
                     {tendersItem && (
                       <button
                         onClick={() => setComboType("tenders")}
-                        className={`flex-1 p-3 md:p-4 rounded-xl border-2 transition-all font-body font-bold text-lg md:text-xl min-h-[48px] flex items-center justify-center ${
+                        className={`flex-1 p-3 md:p-4 rounded-xl border-2 transition-all font-body font-bold text-sm md:text-lg min-h-[48px] flex items-center justify-center gap-3 ${
                           comboType === "tenders"
                             ? "border-accent-pink bg-accent-pink/20 text-accent-pink"
                             : "border-accent-pink/30 bg-bg-light text-text-primary"
                         }`}
                       >
-                        {isRTL ? tendersItem.nameHe : tendersItem.nameEn}
+                        {tendersItem.imageUrl && (
+                          <img
+                            src={tendersItem.imageUrl}
+                            alt=""
+                            className="w-10 h-10 md:w-12 md:h-12 object-contain"
+                          />
+                        )}
+                        <span className="font-body font-bold text-sm md:text-lg">
+                          {isRTL ? tendersItem.nameHe : tendersItem.nameEn}
+                        </span>
                       </button>
                     )}
                   </div>
@@ -335,33 +372,89 @@ export const ItemSelectionPanel = ({
               <div className="mb-4 md:mb-6">
                 <p className="text-base md:text-xl font-body font-bold text-text-primary mb-3 md:mb-4">
                   {t("selection.chooseSauces")}
-                  <span className="text-accent-pink ml-2">
-                    ({selectedSauces.length}/2)
-                  </span>
+                  {selectedSauces.length > 0 && (
+                    <span className="text-accent-pink ml-2 text-sm md:text-lg font-normal">
+                      {selectedSauceNames}
+                    </span>
+                  )}
                 </p>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4">
+                <div className="flex flex-wrap justify-center gap-2 md:gap-4">
                   {sauces.map((sauce) => {
-                    const isSelected = selectedSauces.includes(sauce.id);
-                    const canSelect = selectedSauces.length < 2 || isSelected;
+                    const count = selectedSauces.filter(
+                      (id) => id === sauce.id
+                    ).length;
+                    const isSelected = count > 0;
+                    const canAdd = selectedSauces.length < 2;
 
                     return (
-                      <button
+                      <div
                         key={sauce.id}
-                        onClick={() => toggleSauce(sauce.id)}
-                        disabled={!canSelect}
-                        className={`p-3 md:p-4 rounded-xl border-2 transition-all font-body font-bold text-sm md:text-lg min-h-[56px] md:min-h-[64px] flex items-center justify-center gap-2 ${
+                        onClick={() => {
+                          if (!isSelected && canAdd) addSauce(sauce.id);
+                        }}
+                        className={`relative p-1 rounded-xl border-2 transition-all min-h-[56px] md:min-h-[64px] flex items-center justify-center w-[calc(50%-0.25rem)] md:w-[calc(25%-0.75rem)] ${
                           isSelected
                             ? "border-accent-pink bg-accent-pink/20 text-accent-pink"
-                            : canSelect
-                            ? "border-accent-pink/30 bg-bg-light text-text-primary hover:border-accent-pink/50 active:bg-accent-pink/10"
+                            : canAdd
+                            ? "border-accent-pink/30 bg-bg-light text-text-primary cursor-pointer hover:border-accent-pink/50 active:bg-accent-pink/10"
                             : "border-accent-pink/10 bg-bg-light text-text-primary/40 opacity-50 cursor-not-allowed"
                         }`}
                       >
-                        <span>{isRTL ? sauce.nameHe : sauce.nameEn}</span>
-                        {isSelected && (
-                          <Check className="w-4 h-4 md:w-5 md:h-5 text-accent-pink flex-shrink-0" />
+                        {isSelected ? (
+                          <div className="flex items-center justify-between w-full px-2 gap-1">
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                removeSauce(sauce.id);
+                              }}
+                              className="p-1 rounded-full bg-bg-dark/20 hover:bg-bg-dark/40 transition-colors flex-shrink-0"
+                            >
+                              <Minus className="w-4 h-4" />
+                            </button>
+
+                            <div className="flex items-center justify-center gap-2 flex-1">
+                              {sauce.imageUrl && (
+                                <img
+                                  src={sauce.imageUrl}
+                                  alt=""
+                                  className="w-8 h-8 md:w-10 md:h-10 object-contain"
+                                />
+                              )}
+                              <span className="font-body font-bold text-sm md:text-lg text-center">
+                                {isRTL ? sauce.nameHe : sauce.nameEn}
+                              </span>
+                            </div>
+
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                addSauce(sauce.id);
+                              }}
+                              disabled={!canAdd}
+                              className={`p-1 rounded-full transition-colors flex-shrink-0 ${
+                                canAdd
+                                  ? "bg-bg-dark/20 hover:bg-bg-dark/40"
+                                  : "opacity-0 cursor-default"
+                              }`}
+                            >
+                              <Plus className="w-4 h-4" />
+                            </button>
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-2">
+                            {sauce.imageUrl && (
+                              <img
+                                src={sauce.imageUrl}
+                                alt=""
+                                className="w-8 h-8 md:w-10 md:h-10 object-contain"
+                              />
+                            )}
+                            <span className="font-body font-bold text-sm md:text-lg select-none px-2 text-center">
+                              {isRTL ? sauce.nameHe : sauce.nameEn}
+                            </span>
+                          </div>
                         )}
-                      </button>
+                      </div>
                     );
                   })}
                 </div>
@@ -373,7 +466,7 @@ export const ItemSelectionPanel = ({
                   <p className="text-base md:text-xl font-body font-bold text-text-primary mb-3 md:mb-4">
                     {t("selection.chooseDrink")}
                   </p>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4">
+                  <div className="flex flex-wrap justify-center gap-2 md:gap-4">
                     {drinks.map((drink) => {
                       const isSelected = selectedDrink === drink.id;
 
@@ -381,16 +474,22 @@ export const ItemSelectionPanel = ({
                         <button
                           key={drink.id}
                           onClick={() => toggleDrink(drink.id)}
-                          className={`p-3 md:p-4 rounded-xl border-2 transition-all font-body font-bold text-sm md:text-lg min-h-[56px] md:min-h-[64px] flex items-center justify-center gap-2 ${
+                          className={`p-3 md:p-4 rounded-xl border-2 transition-all font-body font-bold text-sm md:text-lg min-h-[56px] md:min-h-[64px] flex items-center justify-center gap-3 w-[calc(50%-0.25rem)] md:w-[calc(25%-0.75rem)] ${
                             isSelected
                               ? "border-accent-pink bg-accent-pink/20 text-accent-pink"
                               : "border-accent-pink/30 bg-bg-light text-text-primary hover:border-accent-pink/50 active:bg-accent-pink/10"
                           }`}
                         >
-                          <span>{isRTL ? drink.nameHe : drink.nameEn}</span>
-                          {isSelected && (
-                            <Check className="w-4 h-4 md:w-5 md:h-5 text-accent-pink flex-shrink-0" />
+                          {drink.imageUrl && (
+                            <img
+                              src={drink.imageUrl}
+                              alt=""
+                              className="w-10 h-10 md:w-12 md:h-12 object-contain"
+                            />
                           )}
+                          <span className="font-body font-bold text-sm md:text-lg">
+                            {isRTL ? drink.nameHe : drink.nameEn}
+                          </span>
                         </button>
                       );
                     })}
