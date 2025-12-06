@@ -47,14 +47,44 @@ export const ItemSelectionPanel = ({
   );
 
   // State for sauce selection (max 2)
-  const [selectedSauces, setSelectedSauces] = useState<string[]>(
-    initialConfig?.selectedSauces || []
-  );
+  const [selectedSauces, setSelectedSauces] = useState<string[]>(() => {
+    if (!initialConfig?.selectedSauces) return [];
+    // Filter out invalid sauces to prevent issues with removed menu items
+    return initialConfig.selectedSauces.filter((id) =>
+      menuItems.some((i) => i.id === id && i.category === "sauces")
+    );
+  });
 
   // State for drink selection (combo only, 1 drink)
-  const [selectedDrink, setSelectedDrink] = useState<string | null>(
-    initialConfig?.selectedDrink || null
-  );
+  const [selectedDrink, setSelectedDrink] = useState<string | null>(() => {
+    if (!initialConfig?.selectedDrink) return null;
+    // Validate drink exists
+    return menuItems.some(
+      (i) => i.id === initialConfig.selectedDrink && i.category === "drinks"
+    )
+      ? initialConfig.selectedDrink
+      : null;
+  });
+
+  // Sync state when initialConfig changes (for editing scenarios)
+  useEffect(() => {
+    if (isOpen && initialConfig) {
+      // Filter invalid items again when props change
+      const validSauces = initialConfig.selectedSauces.filter((id) =>
+        menuItems.some((i) => i.id === id && i.category === "sauces")
+      );
+      setSelectedSauces(validSauces);
+
+      const validDrink = menuItems.some(
+        (i) => i.id === initialConfig.selectedDrink && i.category === "drinks"
+      )
+        ? initialConfig.selectedDrink
+        : null;
+      setSelectedDrink(validDrink);
+
+      setComboType(initialConfig.comboType);
+    }
+  }, [isOpen, initialConfig]);
 
   // Ensure component is mounted before using portal
   useEffect(() => {
