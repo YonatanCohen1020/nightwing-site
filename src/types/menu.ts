@@ -82,7 +82,7 @@ export const menuItems: MenuItem[] = [
     descriptionEn: "Spicy Honey sauce",
     price: 2,
     category: "sauces",
-    imageUrl: "/assets/menu_items/spicy_honey.webp?v=2",
+    imageUrl: "/assets/menu_items/spicy_honey_v2.webp",
     spiceLevel: 4,
     isAvailable: true,
   },
