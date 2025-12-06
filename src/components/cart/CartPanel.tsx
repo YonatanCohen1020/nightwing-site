@@ -8,7 +8,7 @@ import { ItemSelectionPanel } from "../menu/ItemSelectionPanel";
 import { menuItems } from "../../types/menu";
 
 // Dev mode switch: set to true to use test webhook
-const USE_TEST_WEBHOOK = true;
+const USE_TEST_WEBHOOK = false;
 const WEBHOOK_URL = USE_TEST_WEBHOOK
   ? "https://n8n.yarden-zamir.com/webhook-test/order"
   : "https://n8n.yarden-zamir.com/webhook/order";
