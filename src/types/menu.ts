@@ -165,7 +165,7 @@ export const menuItems: MenuItem[] = [
   },
   {
     id: "combo-1",
-    nameHe: "קומבו",
+    nameHe: "עסקית",
     nameEn: "Combo Meal",
     descriptionHe: "טנדרס/כנפיים + צ'יפס + פחית שתייה + סלט",
     descriptionEn: "Tenders/Wings + Fries + Can Drink + Salad",
