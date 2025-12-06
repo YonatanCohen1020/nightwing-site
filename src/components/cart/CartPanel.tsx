@@ -299,6 +299,23 @@ export const CartPanel = ({ isOpen, onClose }: CartPanelProps) => {
                       <label className="block text-sm font-body font-bold text-text-primary mb-2">
                         {t("cart.deliveryAddress")} *
                       </label>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={handleUseCurrentLocation}
+                          disabled={useCurrentLocation}
+                          className="flex items-center gap-2 px-4 py-2 rounded-lg bg-bg-dark text-text-primary font-body font-bold text-sm hover:bg-bg-light transition-colors disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+                        >
+                          <Navigation
+                            className={`w-4 h-4 ${
+                              useCurrentLocation ? "animate-spin" : ""
+                            }`}
+                          />
+                          {t("cart.useCurrentLocation")}
+                        </button>
+                      </div>
+                      {locationError && (
+                        <p className="text-sm text-red-400">{locationError}</p>
+                      )}
                       <input
                         type="text"
                         value={deliveryAddress}
