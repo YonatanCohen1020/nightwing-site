@@ -8,7 +8,7 @@ import { ItemSelectionPanel } from "../menu/ItemSelectionPanel";
 import { menuItems } from "../../types/menu";
 
 // Dev mode switch: set to true to use test webhook
-const USE_TEST_WEBHOOK = false;
+const USE_TEST_WEBHOOK = true;
 const WEBHOOK_URL = USE_TEST_WEBHOOK
   ? "https://n8n.yarden-zamir.com/webhook-test/order"
   : "https://n8n.yarden-zamir.com/webhook/order";
@@ -47,6 +47,8 @@ export const CartPanel = ({ isOpen, onClose }: CartPanelProps) => {
   const cartTotal = getTotal();
   const finalTotal =
     orderType === "delivery" ? cartTotal + DELIVERY_FEE : cartTotal;
+
+  const [phoneError, setPhoneError] = useState("");
 
   useEffect(() => {
     setMounted(true);
@@ -109,6 +111,12 @@ export const CartPanel = ({ isOpen, onClose }: CartPanelProps) => {
     }
     if (!phoneNumber.trim()) {
       alert(t("cart.requiredField") + ": " + t("cart.phoneNumber"));
+      return;
+    }
+    // Clean phone number (remove non-digits)
+    const cleanPhone = phoneNumber.replace(/\D/g, "");
+    if (cleanPhone.length !== 10) {
+      setPhoneError("נא להזין 10 ספרות");
       return;
     }
     if (orderType === "delivery" && !deliveryAddress.trim()) {
@@ -303,10 +311,16 @@ export const CartPanel = ({ isOpen, onClose }: CartPanelProps) => {
                     <input
                       type="tel"
                       value={phoneNumber}
-                      onChange={(e) => setPhoneNumber(e.target.value)}
+                      onChange={(e) => {
+                        setPhoneNumber(e.target.value);
+                        setPhoneError("");
+                      }}
                       className="w-full px-4 py-3 rounded-lg bg-bg-dark text-text-primary font-body placeholder-text-primary/50 border border-accent-pink/20 focus:border-accent-pink focus:outline-none"
                       placeholder={t("cart.phoneNumber")}
                     />
+                    {phoneError && (
+                      <p className="text-sm text-red-400 mt-1">{phoneError}</p>
+                    )}
                   </div>
 
                   {/* Delivery Address */}
