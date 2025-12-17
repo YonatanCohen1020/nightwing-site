@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation } from "react-i18next";
-import { X, Check, Minus, Plus } from "lucide-react";
+import { X, Minus, Plus } from "lucide-react";
 import { MenuItem } from "../../types/menu";
 import { menuItems } from "../../types/menu";
 import { useCartStore } from "../../stores/useCartStore";
