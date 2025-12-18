@@ -29,12 +29,12 @@ export const MenuSection = () => {
       items: menuItems.filter((item) => item.category === "salads"),
     },
     {
-      key: "sauces" as const,
-      items: menuItems.filter((item) => item.category === "sauces"),
-    },
-    {
       key: "drinks" as const,
       items: menuItems.filter((item) => item.category === "drinks"),
+    },
+    {
+      key: "sauces" as const,
+      items: menuItems.filter((item) => item.category === "sauces"),
     },
   ];
 

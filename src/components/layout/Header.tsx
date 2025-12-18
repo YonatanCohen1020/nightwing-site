@@ -1,18 +1,18 @@
-import { useTranslation } from 'react-i18next';
-import { ShoppingCart } from 'lucide-react';
-import { useCartStore } from '../../stores/useCartStore';
-import { useSmoothScroll } from '../../hooks/useSmoothScroll';
+import { useTranslation } from "react-i18next";
+import { ShoppingCart } from "lucide-react";
+import { useCartStore } from "../../stores/useCartStore";
+import { useSmoothScroll } from "../../hooks/useSmoothScroll";
 
 export const Header = () => {
   const { t, i18n } = useTranslation();
-  const itemCount = useCartStore(state => state.getItemCount());
+  const itemCount = useCartStore((state) => state.getItemCount());
   const { scrollToSection } = useSmoothScroll();
 
   const toggleLanguage = () => {
-    const newLang = i18n.language === 'he' ? 'en' : 'he';
+    const newLang = i18n.language === "he" ? "en" : "he";
     i18n.changeLanguage(newLang);
     document.documentElement.lang = newLang;
-    document.documentElement.dir = newLang === 'he' ? 'rtl' : 'ltr';
+    document.documentElement.dir = newLang === "he" ? "rtl" : "ltr";
   };
 
   return (
@@ -20,9 +20,9 @@ export const Header = () => {
       <div className="container mx-auto px-4 md:px-6 py-3 md:py-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <div 
+          <div
             className="cursor-pointer flex items-center"
-            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
           >
             <span className="text-2xl md:text-3xl font-logo">
               <span className="text-text-primary">NIGHT</span>
@@ -33,28 +33,28 @@ export const Header = () => {
           {/* Navigation - Desktop */}
           <nav className="hidden md:flex items-center gap-6">
             <button
-              onClick={() => scrollToSection('menu')}
+              onClick={() => scrollToSection("menu")}
               className="text-text-primary hover:text-accent-pink transition-colors font-medium"
             >
-              {t('nav.wings')}
+              {t("nav.wings")}
             </button>
             <button
-              onClick={() => scrollToSection('menu')}
+              onClick={() => scrollToSection("menu")}
               className="text-text-primary hover:text-accent-pink transition-colors font-medium"
             >
-              {t('nav.sauces')}
+              {t("nav.drinks")}
             </button>
             <button
-              onClick={() => scrollToSection('menu')}
+              onClick={() => scrollToSection("menu")}
               className="text-text-primary hover:text-accent-pink transition-colors font-medium"
             >
-              {t('nav.salads')}
+              {t("nav.salads")}
             </button>
             <button
-              onClick={() => scrollToSection('menu')}
+              onClick={() => scrollToSection("menu")}
               className="text-text-primary hover:text-accent-pink transition-colors font-medium"
             >
-              {t('nav.drinks')}
+              {t("nav.sauces")}
             </button>
           </nav>
 
@@ -65,7 +65,7 @@ export const Header = () => {
               onClick={toggleLanguage}
               className="px-4 py-2 rounded-lg bg-accent-pink/20 hover:bg-accent-pink/30 border border-accent-pink/40 transition-colors text-base md:text-lg font-body font-bold text-text-primary"
             >
-              {i18n.language === 'he' ? 'English' : 'עברית'}
+              {i18n.language === "he" ? "English" : "עברית"}
             </button>
 
             {/* Cart Icon */}
@@ -83,4 +83,3 @@ export const Header = () => {
     </header>
   );
 };
-
