@@ -1,0 +1,823 @@
+{
+  "name": "nightwing-api",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "order",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -1232,
+        1328
+      ],
+      "id": "1142bb36-6241-468e-bb82-4a8a1afc79fd",
+      "name": "order-recived",
+      "webhookId": "3afbe121-92ad-40f8-80aa-09ea72f0121e"
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "documentId": {
+          "__rl": true,
+          "value": "1kPpgBv3M_X2EqvpEnmD99QMfIMIAglIw5lt463sO2TI",
+          "mode": "list",
+          "cachedResultName": "nightwing-orders",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1kPpgBv3M_X2EqvpEnmD99QMfIMIAglIw5lt463sO2TI/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "orders",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1kPpgBv3M_X2EqvpEnmD99QMfIMIAglIw5lt463sO2TI/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.4,
+      "position": [
+        -1008,
+        1328
+      ],
+      "id": "6d0259de-d420-4f44-a59c-5f7307492efd",
+      "name": "Get Existing Orders1",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleApi": {
+          "id": "T1UDHE0ZAsqOwVv7",
+          "name": "Google Sheets account 3"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get webhook body and existing orders\nconst body = $('order-recived').item.json.body;\nconst existingOrders = $input.all();\nconst items = body.items || [];\n\n// Get current date in Israel timezone\nconst date = new Date(body.orderTime);\nconst dateStr = date.toISOString().split('T')[0];\nconst timeStr = date.toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit', second: '2-digit', timeZone: 'Asia/Jerusalem' });\nconst dateForId = dateStr.replace(/-/g, '');\n\n// Find the highest order number for today\nlet todayOrderNum = 0;\nconst todayPrefix = `NW-${dateForId}-`;\n\nfor (const order of existingOrders) {\n  const orderId = order.json['Order ID'];\n  if (orderId && orderId.startsWith(todayPrefix)) {\n    const numPart = orderId.split('-')[2];\n    const num = parseInt(numPart, 10);\n    if (!isNaN(num) && num > todayOrderNum) {\n      todayOrderNum = num;\n    }\n  }\n}\n\n// Increment for new order\ntodayOrderNum++;\nconst orderId = `${todayPrefix}${todayOrderNum.toString().padStart(3, '0')}`;\n\n// Initialize item counters\nlet wings = 0;\nlet tenders = 0;\nlet fries = 0;\nlet coleslaw = 0;\nlet corndog = 0;\n\n// Combo tracking\nlet comboCount = 0;\n\n// Drink counters (one column per drink)\nconst drinkCounts = {\n  drinkCola: 0,\n  drinkColaZero: 0,\n  drinkFanta: 0,\n  drinkSprite: 0,\n  drinkSpriteZero: 0,\n};\n\n// Map item IDs to drink counter keys\nconst drinkIdToKey = {\n  'drink-cola': 'drinkCola',\n  'drink-cola-zero': 'drinkColaZero',\n  'drink-fanta': 'drinkFanta',\n  'drink-sprite': 'drinkSprite',\n  'drink-sprite-zero': 'drinkSpriteZero',\n};\n\n// Drink display names (for Telegram summary)\nconst drinkKeyToNameHe = {\n  drinkCola: 'קולה',\n  drinkColaZero: 'קולה זירו',\n  drinkFanta: 'פנטה',\n  drinkSprite: 'ספרייט',\n  drinkSpriteZero: 'ספרייט זירו',\n};\n\n// Collect all sauces\nconst allSauces = [];\n\n// Parse items\nfor (const item of items) {\n  const qty = item.quantity || 1;\n\n  // Combos: expand into their component items\n  if (item.id.startsWith('combo-') || item.isCombo) {\n    comboCount += qty;\n\n    if (item.comboConfig?.comboType === 'wings') {\n      wings += qty;\n    } else if (item.comboConfig?.comboType === 'tenders') {\n      tenders += qty;\n    }\n\n    // Combo includes 1 fries + 1 coleslaw per combo\n    fries += qty;\n    coleslaw += qty;\n\n    // Combo includes 1 chosen drink per combo\n    const drinkId = item.comboConfig?.selectedDrink;\n    const drinkKey = drinkIdToKey[drinkId];\n    if (drinkKey) {\n      drinkCounts[drinkKey] += qty;\n    }\n\n    // Add sauces\n    if (item.comboConfig?.selectedSauces) {\n      for (let i = 0; i < qty; i++) {\n        allSauces.push(...item.comboConfig.selectedSauces);\n      }\n    }\n  }\n\n  // Regular wings\n  else if (item.id.startsWith('wings-')) {\n    wings += qty;\n    if (item.comboConfig?.selectedSauces) {\n      for (let i = 0; i < qty; i++) {\n        allSauces.push(...item.comboConfig.selectedSauces);\n      }\n    }\n  }\n\n  // Regular tenders\n  else if (item.id.startsWith('tenders-')) {\n    tenders += qty;\n    if (item.comboConfig?.selectedSauces) {\n      for (let i = 0; i < qty; i++) {\n        allSauces.push(...item.comboConfig.selectedSauces);\n      }\n    }\n  }\n\n  // Add-ons\n  else if (item.id === 'addon-fries') {\n    fries += qty;\n  }\n  else if (item.id === 'salad-coleslaw') {\n    coleslaw += qty;\n  }\n  else if (item.id === 'addon-corndog') {\n    corndog += qty;\n  }\n\n  // Standalone drinks\n  else {\n    const drinkKey = drinkIdToKey[item.id];\n    if (drinkKey) {\n      drinkCounts[drinkKey] += qty;\n    }\n  }\n}\n\n// Map sauce IDs to names\nconst sauceMap = {\n  'sauce-chili': 'צ\\'ילי',\n  'sauce-peanut': 'חמאת בוטנים',\n  'sauce-mustard': 'חרדל ודבש',\n  'sauce-spicy-honey': 'דבש חריף'\n};\n\nconst sauceNames = allSauces.map(s => sauceMap[s] || s);\n\n// Drinks summary for Telegram (optional)\nconst drinksSummaryParts = [];\nfor (const [key, count] of Object.entries(drinkCounts)) {\n  if (count > 0) {\n    drinksSummaryParts.push(`${drinkKeyToNameHe[key]}: ${count}`);\n  }\n}\nconst drinksSummary = drinksSummaryParts.join(', ');\n\n// Format output\nconst isDelivery = body.orderType === 'delivery' ? 'כן' : 'לא';\nconst isCombo = comboCount > 0 ? 'כן' : 'לא';\n\nreturn {\n  json: {\n    orderId: orderId,\n    date: dateStr,\n    time: timeStr,\n    customerName: body.customerName,\n    phone: body.phoneNumber,\n    orderType: body.orderType === 'delivery' ? 'משלוח' : 'איסוף עצמי',\n    deliveryAddress: body.deliveryAddress || '',\n    paymentMethod: body.paymentMethod === 'cash' ? 'מזומן' : 'פייבקס',\n    paymentStatus: 'ממתין',\n    delivery: isDelivery,\n\n    // Core items (combos are expanded into these counts)\n    wings: wings || '',\n    tenders: tenders || '',\n    fries: fries || '',\n    coleslaw: coleslaw || '',\n    corndog: corndog || '',\n\n    // Combo columns\n    isCombo: isCombo,\n    numberOfCombos: comboCount || '',\n\n    // Drink columns\n    drinkCola: drinkCounts.drinkCola || '',\n    drinkColaZero: drinkCounts.drinkColaZero || '',\n    drinkFanta: drinkCounts.drinkFanta || '',\n    drinkSprite: drinkCounts.drinkSprite || '',\n    drinkSpriteZero: drinkCounts.drinkSpriteZero || '',\n\n    // Optional for Telegram readability\n    drinksSummary: drinksSummary || '',\n\n    sauces: sauceNames.join(', ') || '',\n    totalFee: body.total,\n    rawBody: body\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -896,
+        816
+      ],
+      "id": "f29bcfed-ef0f-4845-8eef-817a8358aa56",
+      "name": "Parse Order Data"
+    },
+    {
+      "parameters": {
+        "chatId": "-1003378798254",
+        "text": "=🍗 **הזמנה חדשה #{{ $('Parse Order Data').item.json.orderId }}**\n\n👤 **לקוח:** {{ $('Parse Order Data').item.json.customerName }}\n📞 **טלפון:** {{ $('Parse Order Data').item.json.phone }}\n⏰ **שעה:** {{ $('Parse Order Data').item.json.time }}\n\n📦 **סוג הזמנה:** {{ $('Parse Order Data').item.json.orderType }}\n{{ $('Parse Order Data').item.json.deliveryAddress ? '📍 כתובת: [' + $('Parse Order Data').item.json.deliveryAddress + '](https://waze.com/ul?q=' + encodeURIComponent($('Parse Order Data').item.json.deliveryAddress) + ')' : '' }}\n\n💳 **תשלום:** {{ $('Parse Order Data').item.json.paymentMethod }}\n\n🍽️ **פריטים:**\n{{ $('Parse Order Data').item.json.numberOfCombos ? '• קומבואים: ' + $('Parse Order Data').item.json.numberOfCombos + '\\n' : '' }}{{ $('Parse Order Data').item.json.wings ? '• כנפיים: ' + $('Parse Order Data').item.json.wings + '\\n' : '' }}{{ $('Parse Order Data').item.json.tenders ? '• טנדרס: ' + $('Parse Order Data').item.json.tenders + '\\n' : '' }}{{ $('Parse Order Data').item.json.fries ? '• צ\\'יפס: ' + $('Parse Order Data').item.json.fries + '\\n' : '' }}{{ $('Parse Order Data').item.json.coleslaw ? '• קולסלאו: ' + $('Parse Order Data').item.json.coleslaw + '\\n' : '' }}{{ $('Parse Order Data').item.json.corndog ? '• קורנדוג: ' + $('Parse Order Data').item.json.corndog + '\\n' : '' }}{{ $('Parse Order Data').item.json.drinksSummary ? '🥤 משקאות: ' + $('Parse Order Data').item.json.drinksSummary + '\\n' : '' }}{{ $('Parse Order Data').item.json.sauces ? '🌶️ רטבים: ' + $('Parse Order Data').item.json.sauces + '\\n' : '' }}\n💰 **סה\\\"כ: ₪{{ $('Parse Order Data').item.json.totalFee }}**\n\n=📄 **פתיחת גיליון ההזמנות**\n[לחץ כאן לפתיחה](https://docs.google.com/spreadsheets/d/1kPpgBv3M_X2EqvpEnmD99QMfIMIAglIw5lt463sO2TI/edit?gid=0#gid=0)\n\n",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -560,
+        720
+      ],
+      "id": "2aca7ee2-0f95-474a-8ec7-f458e751e8ad",
+      "name": "Send Telegram",
+      "webhookId": "6702a6f0-7e4f-4bb5-9735-7fe4c61f4356",
+      "credentials": {
+        "telegramApi": {
+          "id": "Tdd0sxRdsNNqcQf1",
+          "name": "Telegram account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { \"success\": true, \"orderId\": $('Parse Order Data').item.json.orderId } }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        -336,
+        720
+      ],
+      "id": "32278748-cee6-4ef0-b3b5-15790d26eb8c",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1kPpgBv3M_X2EqvpEnmD99QMfIMIAglIw5lt463sO2TI",
+          "mode": "list",
+          "cachedResultName": "nightwing-orders",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1kPpgBv3M_X2EqvpEnmD99QMfIMIAglIw5lt463sO2TI/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "orders",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1kPpgBv3M_X2EqvpEnmD99QMfIMIAglIw5lt463sO2TI/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Order ID": "={{ $json.orderId }}",
+            "Date": "={{ $json.date }}",
+            "Time": "={{ $json.time }}",
+            "Phone": "='{{ $json.phone }}",
+            "Order Type": "={{ $json.orderType }}",
+            "Delivery Address": "={{ $json.deliveryAddress }}",
+            "Payment Method": "={{ $json.paymentMethod }}",
+            "Payment Status": "={{ $json.paymentStatus }}",
+            "Delivery": "={{ $json.delivery }}",
+            "Wings": "={{ $json.wings }}",
+            "Tenders": "={{ $json.tenders }}",
+            "Fries": "={{ $json.fries }}",
+            "Coleslaw": "={{ $json.coleslaw }}",
+            "Corndog": "={{ $json.corndog }}",
+            "Cola": "={{ $json.drinkCola }}",
+            "Cola Zero": "={{ $json.drinkColaZero }}",
+            "Fanta": "={{ $json.drinkFanta }}",
+            "Sprite": "={{ $json.drinkSprite }}",
+            "Sprite Zero": "={{ $json.drinkSpriteZero }}",
+            "Is Combo": "={{ $json.isCombo }}",
+            "Number of Combos": "={{ $json.numberOfCombos }}",
+            "Sauces": "={{ $json.sauces }}",
+            "Total Fee": "={{ $json.totalFee }}",
+            "Customer Name": "={{ $json.customerName }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Order ID",
+              "displayName": "Order ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Time",
+              "displayName": "Time",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Customer Name",
+              "displayName": "Customer Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Phone",
+              "displayName": "Phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Order Type",
+              "displayName": "Order Type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Delivery Address",
+              "displayName": "Delivery Address",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Payment Method",
+              "displayName": "Payment Method",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Payment Status",
+              "displayName": "Payment Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Delivery",
+              "displayName": "Delivery",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Wings",
+              "displayName": "Wings",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Tenders",
+              "displayName": "Tenders",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Fries",
+              "displayName": "Fries",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Coleslaw",
+              "displayName": "Coleslaw",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Corndog",
+              "displayName": "Corndog",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Cola",
+              "displayName": "Cola",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Cola Zero",
+              "displayName": "Cola Zero",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Fanta",
+              "displayName": "Fanta",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Sprite",
+              "displayName": "Sprite",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Sprite Zero",
+              "displayName": "Sprite Zero",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Is Combo",
+              "displayName": "Is Combo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Number of Combos",
+              "displayName": "Number of Combos",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Sauces",
+              "displayName": "Sauces",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Total Fee",
+              "displayName": "Total Fee",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.4,
+      "position": [
+        -560,
+        912
+      ],
+      "id": "5b270b65-37ce-46a7-8a90-3e3dff05658e",
+      "name": "Add to Google Sheet",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleApi": {
+          "id": "T1UDHE0ZAsqOwVv7",
+          "name": "Google Sheets account 3"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $input.first().json;\n\n// Error object shape varies by node\nconst err = input.error || input;\nconst errorMessage =\n  err.message ||\n  err.description ||\n  err.error ||\n  (err.cause && err.cause.message) ||\n  JSON.stringify(err);\n\n// Prefer order data from the current item (if it flowed through)\nlet order = input.rawBody || null;\n\n// Fallback: try to reach the original webhook body\nif (!order) {\n  try {\n    order = $('order-recived').item.json.body || null;\n  } catch (e) {\n    order = null;\n  }\n}\n\norder = order || {};\n\n// Items summary (human readable)\nconst itemsSummary = Array.isArray(order.items)\n  ? order.items.map(i => `• ${i.name || i.id || 'item'} x${i.quantity || 1}`).join('\\n')\n  : 'No items found';\n\nreturn {\n  json: {\n    alertTitle: '🚨 שגיאה בעיבוד הזמנה האחרונה 🚨',\n    errorMessage,\n    timestamp: new Date().toLocaleString('he-IL', { timeZone: 'Asia/Jerusalem' }),\n\n    customerName: order.customerName || input.customerName || 'לא ידוע',\n    phone: order.phoneNumber || input.phone || 'לא ידוע',\n    orderType: (order.orderType || input.orderType) === 'delivery' ? 'משלוח' : 'איסוף עצמי',\n    address: order.deliveryAddress || input.deliveryAddress || '-',\n    total: order.total || input.totalFee || '0',\n    paymentMethod: order.paymentMethod || input.paymentMethod || '-',\n\n    itemsSummary\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -336,
+        1424
+      ],
+      "id": "49092ca5-9731-4acc-9cf2-f244e2c7cbcf",
+      "name": "Parse Error Data"
+    },
+    {
+      "parameters": {
+        "chatId": "-1003378798254",
+        "text": "={{ $json.alertTitle }}\n\n⚠️ **שגיאה:** {{ $json.errorMessage }}\n🕒 **זמן:** {{ $json.timestamp }}\n\n--- פרטי לקוח (לטיפול ידני) ---\n👤 **שם:** {{ $json.customerName }}\n📞 **טלפון:** {{ $json.phone }}\n🚚 **סוג:** {{ $json.orderType }}\n📍 **כתובת:** {{ $json.address }}\n💰 **סה\"כ:** ₪{{ $json.total }}\n💳 **תשלום:** {{ $json.paymentMethod }}\n\n🛒 **פריטים (גלם):**\n{{ $json.itemsSummary }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -112,
+        1424
+      ],
+      "id": "bb551e5c-6789-4055-ac63-8a7034b78922",
+      "name": "Send Telegram Error",
+      "webhookId": "6702a6f0-7e4f-4bb5-9735-7fe4c61f4356",
+      "credentials": {
+        "telegramApi": {
+          "id": "Tdd0sxRdsNNqcQf1",
+          "name": "Telegram account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1kPpgBv3M_X2EqvpEnmD99QMfIMIAglIw5lt463sO2TI",
+          "mode": "list",
+          "cachedResultName": "nightwing-orders",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1kPpgBv3M_X2EqvpEnmD99QMfIMIAglIw5lt463sO2TI/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "orders",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1kPpgBv3M_X2EqvpEnmD99QMfIMIAglIw5lt463sO2TI/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Order ID": "={{ $json.orderId }}",
+            "Date": "={{ $json.date }}",
+            "Time": "={{ $json.time }}",
+            "Phone": "='{{ $json.phone }}",
+            "Order Type": "={{ $json.orderType }}",
+            "Delivery Address": "={{ $json.deliveryAddress }}",
+            "Payment Method": "={{ $json.paymentMethod }}",
+            "Payment Status": "={{ $json.paymentStatus }}",
+            "Delivery": "={{ $json.delivery }}",
+            "Wings": "={{ $json.wings }}",
+            "Tenders": "={{ $json.tenders }}",
+            "Fries": "={{ $json.fries }}",
+            "Coleslaw": "={{ $json.coleslaw }}",
+            "Corndog": "={{ $json.corndog }}",
+            "Cola": "={{ $json.drinkCola }}",
+            "Cola Zero": "={{ $json.drinkColaZero }}",
+            "Fanta": "={{ $json.drinkFanta }}",
+            "Sprite": "={{ $json.drinkSprite }}",
+            "Sprite Zero": "={{ $json.drinkSpriteZero }}",
+            "Is Combo": "={{ $json.isCombo }}",
+            "Number of Combos": "={{ $json.numberOfCombos }}",
+            "Sauces": "={{ $json.sauces }}",
+            "Total Fee": "={{ $json.totalFee }}",
+            "Customer Name": "={{ $json.customerName }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Order ID",
+              "displayName": "Order ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Time",
+              "displayName": "Time",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Customer Name",
+              "displayName": "Customer Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Phone",
+              "displayName": "Phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Order Type",
+              "displayName": "Order Type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Delivery Address",
+              "displayName": "Delivery Address",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Payment Method",
+              "displayName": "Payment Method",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Payment Status",
+              "displayName": "Payment Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Delivery",
+              "displayName": "Delivery",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Wings",
+              "displayName": "Wings",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Tenders",
+              "displayName": "Tenders",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Fries",
+              "displayName": "Fries",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Coleslaw",
+              "displayName": "Coleslaw",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Corndog",
+              "displayName": "Corndog",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Cola",
+              "displayName": "Cola",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Cola Zero",
+              "displayName": "Cola Zero",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Fanta",
+              "displayName": "Fanta",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Sprite",
+              "displayName": "Sprite",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Sprite Zero",
+              "displayName": "Sprite Zero",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Is Combo",
+              "displayName": "Is Combo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Number of Combos",
+              "displayName": "Number of Combos",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Sauces",
+              "displayName": "Sauces",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Total Fee",
+              "displayName": "Total Fee",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.4,
+      "position": [
+        -560,
+        1152
+      ],
+      "id": "60ccc367-97a6-4c7c-852c-235c3d6c411f",
+      "name": "Add to Google Sheet backup",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleApi": {
+          "id": "T1UDHE0ZAsqOwVv7",
+          "name": "Google Sheets account 3"
+        }
+      },
+      "onError": "continueErrorOutput"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "order-recived": {
+      "main": [
+        [
+          {
+            "node": "Get Existing Orders1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Existing Orders1": {
+      "main": [
+        [
+          {
+            "node": "Parse Order Data",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Parse Error Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Order Data": {
+      "main": [
+        [
+          {
+            "node": "Send Telegram",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Add to Google Sheet",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Add to Google Sheet backup",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Telegram": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add to Google Sheet": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Parse Error Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Error Data": {
+      "main": [
+        [
+          {
+            "node": "Send Telegram Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "955f2d83-ad1f-40bf-9e6f-d22b08b0e770",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "89b9ab529ea14839dca82f43e1530a0480bda89e8aa98b84295fc07564669b96"
+  },
+  "id": "krW3fXGwoWuj7V64",
+  "tags": []
+}
